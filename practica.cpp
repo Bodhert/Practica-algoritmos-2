@@ -7,14 +7,14 @@ bool visited[MAXN];
 // typedef pair<int, pair <double,double> > node_cordenadas;
 typedef pair <int, int> edge;
 vector < pair<int, int> > g[MAXN]; // para trabajaar mañan
-map<int, double> coordinateXmap;
-map<int, double> coordinateYmap;
+map<int, string> coordinateXmap;
+map<int, string> coordinateYmap;
 int d[MAXN];
 int p[MAXN];
 
 void printCoordenadasX()
 {
-  for(map <int, double>::iterator it = coordinateXmap.begin();
+  for(map <int, string>::iterator it = coordinateXmap.begin();
   it != coordinateXmap.end(); ++it)
   {
     cout << it -> first << ": " << it -> second<< endl;
@@ -24,14 +24,14 @@ void printCoordenadasX()
 
 void printCoordenadasY()
 {
-  for(map <int, double>::iterator it = coordinateYmap.begin();
+  for(map <int, string>::iterator it = coordinateYmap.begin();
   it != coordinateYmap.end(); ++it)
   {
     cout << it -> first << ": " << it -> second << endl;
   }
 }
 
-void storeCordenada(int vertex, int coordinateX,int coordinateY)
+void storeCordenada(int vertex, string coordinateX,string coordinateY)
 {
   coordinateXmap[vertex] = coordinateX;
   coordinateYmap[vertex] = coordinateY;
@@ -47,11 +47,11 @@ void readFirstandStore()
   string ignore;
   char tmp[100];
   int vertex,vertex1,vertex2,weigth;
-  double coordinateX,coordinateY;
+  char coordinateX[20],coordinateY[20];
 
   getline(cin,ignore); cout << ignore;
   //getline(cin,ignore); cout << ignore;
-  while(scanf("%i %lf %lf",&vertex,&coordinateX,&coordinateY))
+  while(scanf("%i %s %s",&vertex, coordinateX, coordinateY))
   {
     // printf( "vertice:%i, x = %.15g, y = %.15g\n", vertex, coordinateX,
     // coordinateY);
