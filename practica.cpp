@@ -7,16 +7,37 @@ int size,disSize;
 typedef pair <int, int> edge;
 typedef vector <edge> vii;
 typedef vector <int> vi;
-typedef pair <int,int> dist_node; //datos del heap (nodo, peso)
+typedef pair <int,int> dist_node; //datos del heap (nodo, distancia)
 
 vector <vii> graph;
 vector <vi> dispatch;
 vector <int> dist;
 vector <int> predecesor;
+map <int , vii> Node_dis;
+
+
+void printDistances()
+{
+  for(map<int , vii>::iterator map_iter = Node_dis.begin();
+  map_iter != Node_dis.end(); ++map_iter)
+  {
+     cout << "nodo: " << map_iter -> first << " va al : " << endl ;
+     for(vector<edge>:: iterator it = map_iter -> second.begin();
+     it != map_iter -> second.end(); ++it)
+     {
+        int nodo = it -> first;
+        int dis = it -> second;
+        cout << "       nodo: " <<nodo << " " << " con un  distancia de: "
+        << dis << ' ' << endl;//<< " " << dis;
+     }
+  }
+}
 
 void dijkstra(int source)
 {
   priority_queue <dist_node ,vector <dist_node> , greater <dist_node> > q;
+  dist.assign(graph.size(),INF);
+  //limpiar predecesor
 
   dist[source] = 0;
   q.push(dist_node(0,source));
@@ -55,13 +76,32 @@ vector <int> find_path(int t)
 
 void call_dijkstra()
 {
-  dijkstra(0);
-  cout << dist[1000] << endl;
-  vi camino = find_path(1000);
-  for(int i = 0; i < camino.size(); ++i)
+  for(int i = 0; i < dispatch.size(); ++i)
   {
-    cout << camino[i] << ' ';
+     cout << " despacho # "  << i + 1 << endl;
+    for(int j = 0; j < dispatch[i].size(); ++j)
+    {
+      int cur = dispatch[i][j];
+      dijkstra(cur);
+      // cout << "current: "<< cur << " " << endl;
+      for(int l = 0; l < dispatch[i].size(); ++l)
+      {
+        int next = dispatch[i][l];
+        if( next !=  cur)
+        {
+          int actdist = dist[next];
+          // cout << " metiendo en la pos " << cur  << " indice: " << next <<
+          //  " un distancia de: " << actdist << ' ' << endl;
+          Node_dis[cur].push_back(edge(next,actdist));
+        }
+      }
+    }
+    printDistances();
+    Node_dis.clear();
+    //setear solo los elementos del dijstra del despacho no  todo otra vez
+    cout << endl;
   }
+
 }
 
 
