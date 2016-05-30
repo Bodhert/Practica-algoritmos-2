@@ -2,12 +2,14 @@
 using namespace std;
 
 const int INF = 1 << 30;
-int size;
+int size,disSize;
 
 typedef pair <int, int> edge;
 typedef vector <edge> vii;
+typedef vector <int> vi;
 
 vector <vii> graph;
+vector <vi> dispatch;
 vector <int> dist;
 vector <int> predecesor;
 
@@ -19,21 +21,45 @@ void setContainers()
   predecesor.assign(size, -1);
 }
 
+void setDispatch(int dSize)
+{
+  dispatch.assign(dSize, vi());
+}
+
+
+void printDispatches()
+{
+  ofstream salida("salidaRepartidores.txt");
+  for(int i = 0; i < disSize; ++i )
+  {
+    salida << "Despacho " << i + 1 << endl;
+    salida << " esquinas: ";
+    for(int j  = 0; j < dispatch[i].size(); ++j)
+    {
+      salida << dispatch[i][j] << ' ';
+    }
+    salida << endl;
+  }
+}
+
 void printConexAndWeigth()
 {
+  ofstream salida("salidaGrafo.txt");
+
   for(int i = 0; i < size; ++i )
   {
-    if(graph[i].size() != 0){
-      cout << "nodo : " << i << " va a: (nodo, distancia) " << endl;
+    if(graph[i].size() != 0)
+    {
+      salida << "nodo : " << i << " va a: (nodo, distancia) " << endl;
       for(int j = 0; j < graph[i].size(); ++j)
       {
-        cout << graph[i][j].first << " ";
-        cout << graph[i][j].second << " ";
-        cout << endl;
+        salida << graph[i][j].first << " ";
+        salida << graph[i][j].second << " ";
+        salida << endl;
       }
     }
   }
-  cout << endl;
+  salida.close();
 }
 
 
@@ -45,16 +71,43 @@ void saveGraph(int vertex1, int vertex2,int weigth)
 void readAndStore()
 {
   int vertex1,vertex2,weigth;
+  int totalDom,pointDom;
+  string Dompuntos;
 
-  scanf("%i", &size);
-
-  setContainers();
-
-  while(scanf("%i %i %i",&vertex1,&vertex2,&weigth) != EOF)
+  ifstream mapa("medellin_arcos.txt"); //cambiar esta linea por el nomre del archivo
+  if(mapa.is_open())
   {
-    saveGraph(vertex1,vertex2,weigth);
+    mapa >> size;
+    setContainers();
+
+    while(mapa >> vertex1 >> vertex2 >> weigth)
+    {
+       saveGraph(vertex1,vertex2,weigth);
+    }
+    mapa.close();
   }
 
+  ifstream domi("repartidores.txt");
+  if(domi.is_open())
+  {
+    domi >> totalDom;
+    disSize = totalDom;
+    setDispatch(totalDom);
+    getline(domi, Dompuntos);
+    for(int i = 0; i < totalDom; ++i)
+    {
+
+      getline(domi, Dompuntos);
+      stringstream ss(Dompuntos);
+      while(ss >> pointDom)
+      {
+        dispatch[i].push_back(pointDom);
+      }
+
+    }
+
+  }
+    domi.close();
 }
 
 int main()
@@ -62,5 +115,6 @@ int main()
   std::ios::sync_with_stdio(true);
   readAndStore();
   printConexAndWeigth();
+  printDispatches();
   return 0;
 }
