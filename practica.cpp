@@ -13,23 +13,18 @@ vector <vii> graph;
 vector <vi> dispatch;
 vector <int> dist;
 vector <int> predecesor;
-map <int , vii> Node_dis;
+vector <vii> Node_dis;
 
 
 void printDistances()
 {
-  for(map<int , vii>::iterator map_iter = Node_dis.begin();
-  map_iter != Node_dis.end(); ++map_iter)
+  for(int i = 0; i < Node_dis.size(); i++)
   {
-     cout << "nodo: " << map_iter -> first << " va al : " << endl ;
-     for(vector<edge>:: iterator it = map_iter -> second.begin();
-     it != map_iter -> second.end(); ++it)
-     {
-        int nodo = it -> first;
-        int dis = it -> second;
-        cout << "       nodo: " <<nodo << " " << " con un  distancia de: "
-        << dis << ' ' << endl;//<< " " << dis;
-     }
+    if(Node_dis[i].size() > 0) cout << "Distancia del nodo " << i << " al " << endl;
+    for(int j = 0 ; j < Node_dis[i].size(); ++j)
+    {
+      cout << "Nodo: " << Node_dis[i][j].first << " Distancia: " << Node_dis[i][j].second << endl;
+    }
   }
 }
 
@@ -74,13 +69,56 @@ vector <int> find_path(int t)
   return path;
 }
 
+void solve(int root)
+{
+  cout << " raiz: " << root << endl;
+  vi dist;
+  dist.assign(graph.size(), -1);
+  queue <int> q;
+  dist[root] = 1;
+  q.push(root);
+
+  while(!q.empty())
+  {
+    int cur = q.front() ; q.pop();
+    int next = -1;
+    int dis = INF;
+    for(int i = 0 ; i < Node_dis[cur].size(); ++i)
+    {
+      int tempnext =  Node_dis[cur][i].first;
+      int tempdist =  Node_dis[cur][i].second;
+
+      if(tempdist < dis && dist[tempnext] == -1)
+      {
+        dis = tempdist;
+        next = tempnext;
+      }
+    }
+
+    if(next != -1)
+    {
+      if(dist[next] == -1)
+      {
+        cout << " ganador " << next;
+        dist[next] = 1;
+        q.push(next);
+      }
+    }
+  }
+
+}
+
 void call_dijkstra()
 {
+  int root;
+
   for(int i = 0; i < dispatch.size(); ++i)
   {
      cout << " despacho # "  << i + 1 << endl;
     for(int j = 0; j < dispatch[i].size(); ++j)
     {
+      if(j == 0 ) root = dispatch[i][j];
+
       int cur = dispatch[i][j];
       dijkstra(cur);
       // cout << "current: "<< cur << " " << endl;
@@ -97,7 +135,9 @@ void call_dijkstra()
       }
     }
     printDistances();
-    Node_dis.clear();
+    solve(root); // THE MAGIC IS HERE
+    //llamar a una funcion que se encargue de encotrame el menor
+    Node_dis.assign(graph.size(), vii());
     //setear solo los elementos del dijstra del despacho no  todo otra vez
     cout << endl;
   }
@@ -110,6 +150,7 @@ void setContainers(int graphSize)
   graph.assign(graphSize,vii());
   dist.assign(graphSize,INF);
   predecesor.assign(graphSize, -1);
+  Node_dis.assign(graphSize,vii());
 }
 
 void setDispatch(int dispatchSize)
