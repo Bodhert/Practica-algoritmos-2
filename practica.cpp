@@ -14,6 +14,7 @@ vector <vi> dispatch;
 vector <int> dist;
 vector <int> predecesor;
 vector <vii> Node_dis;
+vector <vi> Ans;
 
 
 void printDistances()
@@ -32,7 +33,8 @@ void dijkstra(int source)
 {
   priority_queue <dist_node ,vector <dist_node> , greater <dist_node> > q;
   dist.assign(graph.size(),INF);
-  //limpiar predecesor
+  predecesor.assign(graph.size(), -1);
+
 
   dist[source] = 0;
   q.push(dist_node(0,source));
@@ -69,11 +71,13 @@ vector <int> find_path(int t)
   return path;
 }
 
-void solve(int root)
+vector <int> solve(int root)
 {
-  cout << " raiz: " << root << endl;
+  // cout << " raiz: " << root << endl;
   vi dist;
+  vi result;
   dist.assign(graph.size(), -1);
+  result.push_back(root);
   queue <int> q;
   dist[root] = 1;
   q.push(root);
@@ -93,19 +97,73 @@ void solve(int root)
         dis = tempdist;
         next = tempnext;
       }
+
     }
 
     if(next != -1)
     {
       if(dist[next] == -1)
       {
-        cout << " ganador " << next;
+        // cout << " ganador " << next;
         dist[next] = 1;
+        result.push_back(next);
         q.push(next);
       }
     }
   }
 
+  return result;
+
+}
+
+void call_Second_dijstra()
+{
+  ofstream answer("answer.txt");
+  int total = 0;
+  for(int i = 0; i < Ans.size(); ++i)
+  {
+    answer << "Despacho # " << i+1 << " " << endl;
+    answer << "la mejor ruta encontrada fue: " << endl;
+
+    for(int j = 0; j < Ans[i].size(); ++j)
+    {
+      answer << Ans[i][j] << " ";
+    }
+    answer << endl;
+    answer << " los puntos por lo que pasan: " << endl;
+
+    for(int j = 0; j < Ans[i].size(); ++j)
+    {
+      if(j != Ans[i].size()-1)
+      {
+        int tempNode = Ans[i][j];
+        int nextTempNode = Ans[i][j+1];
+        dijkstra(tempNode);
+        total += dist[nextTempNode];
+        vi temp = find_path(nextTempNode);
+        for(int k = 0; k < temp.size(); ++k)
+        {
+          answer << " " << temp[k] << " ";
+        }
+      }
+      else
+      {
+        int tempNode = Ans[i][j];
+        int nextTempNode = Ans[i][0];
+        dijkstra(tempNode);
+        total += dist[Ans[i][0]];
+        vi temp = find_path(nextTempNode);
+        for(int k = 0; k < temp.size(); ++k)
+        {
+          answer << " " << temp[k] << " ";
+        }
+      }
+
+    }
+    answer << endl;
+    answer << " con un total de: " << total << endl;
+  }
+  answer.close();
 }
 
 void call_dijkstra()
@@ -135,7 +193,14 @@ void call_dijkstra()
       }
     }
     printDistances();
-    solve(root); // THE MAGIC IS HERE
+    vi temp = solve(root); // THE MAGIC IS HERE
+    cout << " Mejor camino encontrado: ";
+
+    for(int k = 0; k < temp.size(); ++k){
+      Ans[i].push_back(temp[k]);
+      cout << temp[k] << ' ';
+    }
+
     //llamar a una funcion que se encargue de encotrame el menor
     Node_dis.assign(graph.size(), vii());
     //setear solo los elementos del dijstra del despacho no  todo otra vez
@@ -151,11 +216,13 @@ void setContainers(int graphSize)
   dist.assign(graphSize,INF);
   predecesor.assign(graphSize, -1);
   Node_dis.assign(graphSize,vii());
+
 }
 
 void setDispatch(int dispatchSize)
 {
   dispatch.assign(dispatchSize, vi());
+  Ans.assign(dispatchSize,vi());
 }
 
 
@@ -249,5 +316,6 @@ int main()
   std::ios::sync_with_stdio(true);
   readAndStore();
   call_dijkstra();
+  call_Second_dijstra();
   return 0;
 }
