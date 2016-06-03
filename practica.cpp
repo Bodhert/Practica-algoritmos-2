@@ -119,9 +119,9 @@ vector <int> solve(int root)
 void call_Second_dijstra()
 {
   ofstream answer("answer.txt");
-  int total = 0;
   for(int i = 0; i < Ans.size(); ++i)
   {
+    int total = 0;
     answer << "Despacho # " << i+1 << " " << endl;
     answer << "la mejor ruta encontrada fue: " << endl;
 
@@ -129,6 +129,7 @@ void call_Second_dijstra()
     {
       answer << Ans[i][j] << " ";
     }
+    answer << Ans[i][0];
     answer << endl;
     answer << " los puntos por lo que pasan: " << endl;
 
@@ -141,13 +142,14 @@ void call_Second_dijstra()
         dijkstra(tempNode);
         total += dist[nextTempNode];
         vi temp = find_path(nextTempNode);
-        for(int k = 0; k < temp.size(); ++k)
+        for(int k = 0; k < temp.size()-1; ++k)
         {
           answer << " " << temp[k] << " ";
         }
       }
       else
       {
+        //answer << "jijij" << endl;
         int tempNode = Ans[i][j];
         int nextTempNode = Ans[i][0];
         dijkstra(tempNode);
